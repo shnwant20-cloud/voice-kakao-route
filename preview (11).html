@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>음성 길찾기 v5</title>
+<style>
+body{margin:0;background:#f5f3ff;font-family:Arial,sans-serif}
+.wrap{max-width:480px;margin:auto;padding:20px}
+.card{background:#fff;padding:20px;border-radius:20px}
+h1{text-align:center;color:#5b2bbf}
+input,button{width:100%;padding:16px;margin-top:12px;border-radius:12px;box-sizing:border-box;font-size:16px}
+input{border:1px solid #ddd}
+button{border:0;background:#6b35df;color:#fff}
+#msg{margin-top:15px;font-size:14px;color:#555}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+<h1>음성 길찾기</h1>
+
+<input id="start" placeholder="출발지">
+<button onclick="voice('start')">🎤 출발지 말하기</button>
+
+<input id="end" placeholder="도착지">
+<button onclick="voice('end')">🎤 도착지 말하기</button>
+
+<button onclick="route()">🚕 자동차 길찾기</button>
+
+<div id="msg">출발지와 도착지를 입력하세요.</div>
+</div>
+</div>
+
+<script>
+let target="";
+
+function voice(id){
+ target=id;
+
+ if(!window.webkitSpeechRecognition){
+  alert("음성인식을 지원하지 않는 브라우저입니다.");
+  return;
+ }
+
+ const r=new webkitSpeechRecognition();
+ r.lang="ko-KR";
+
+ r.onresult=function(e){
+  document.getElementById(target).value=e.results[0][0].transcript;
+ };
+
+ r.start();
+}
+
+function route(){
+
+ const start=document.getElementById("start").value.trim();
+ const end=document.getElementById("end").value.trim();
+
+ if(!start || !end){
+  alert("출발지와 도착지를 입력해주세요.");
+  return;
+ }
+
+ /*
+ 현재 단계:
+ 검색어 전달 방식이 아니라
+ 출발지/도착지 분리 길찾기 호출 방식 테스트
+ */
+
+ const url =
+ "kakaomap://route?sp="
+ + encodeURIComponent(start)
+ + "&ep="
+ + encodeURIComponent(end)
+ + "&by=CAR";
+
+ document.getElementById("msg").innerText="카카오맵 자동차 길찾기 실행";
+
+ window.location.href=url;
+
+ setTimeout(()=>{
+   window.location.href=
+   "https://map.kakao.com/link/to/"
+   +encodeURIComponent(end);
+ },1500);
+}
+</script>
+
+</div>
+</body>
+</html>
